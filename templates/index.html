@@ -1,1 +1,158 @@
 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scraper UI</title>
+    <style>
+        :root {
+            --bg-color: #0d1117;
+            --surface-color: #161b22;
+            --border-color: #30363d;
+            --text-primary: #c9d1d9;
+            --text-secondary: #8b949e;
+            --accent-primary: #2f81f7;
+            --input-bg: #0d1117;
+            --button-light-bg: #21262d;
+            --button-light-hover-bg: #30363d;
+            --star-color: #facc15;
+        }
+
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; background-color: var(--bg-color); color: var(--text-primary); margin: 0; padding: 2rem 1rem; }
+        .container { width: 100%; max-width: 900px; margin: 0 auto; }
+        .tabs-header { display: flex; justify-content: center; margin-bottom: 2rem; border-bottom: 1px solid var(--border-color); }
+        .tab-link { padding: 0.75rem 1.5rem; border: none; background: none; color: var(--text-secondary); cursor: pointer; font-size: 1rem; position: relative; transition: color 0.2s; }
+        .tab-link:hover { color: var(--text-primary); }
+        .tab-link.active { color: var(--accent-primary); font-weight: 500; }
+        .tab-link.active::after { content: ''; position: absolute; bottom: -1px; left: 0; right: 0; height: 2px; background-color: var(--accent-primary); }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        .form-title { font-size: 1.75rem; margin-bottom: 1.5rem; }
+        .search-container { display: flex; gap: 1rem; align-items: center; }
+        .search-wrapper { position: relative; flex-grow: 1; }
+        .search-wrapper svg { position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); color: var(--text-secondary); width: 1rem; height: 1rem; }
+        .search-input { width: 100%; box-sizing: border-box; padding: 0.75rem 1rem 0.75rem 3rem; border: 1px solid var(--border-color); border-radius: 6px; background-color: var(--input-bg); color: var(--text-primary); font-size: 1rem; }
+        .search-button { background-color: var(--button-light-bg); color: var(--text-primary); padding: 0.75rem 1.5rem; border: 1px solid var(--border-color); border-radius: 6px; cursor: pointer; font-weight: 500; flex-shrink: 0; }
+        .search-button:hover { background-color: var(--button-light-hover-bg); }
+        .filter-controls { display: flex; gap: 0.75rem; align-items: center; margin-top: 1rem; }
+        .filter-chip, .filter-chip-select { display: flex; align-items: center; background-color: var(--surface-color); padding: 0.5rem 0.75rem; border-radius: 6px; border: 1px solid var(--border-color); font-size: 0.9rem; color: var(--text-secondary); }
+        .filter-select { background: none; border: none; color: var(--text-secondary); font-size: 0.9rem; padding-right: 0.5rem; }
+        .filter-select:focus { outline: none; }
+        .count-input { background: none; border: none; color: var(--text-primary); font-size: 0.9rem; width: 40px; padding: 0; margin-left: 0.5rem; text-align: center; }
+        .count-input:focus { outline: none; }
+        .count-input { -moz-appearance: textfield; }
+        .count-input::-webkit-outer-spin-button, .count-input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+        .results-section { margin-top: 2.5rem; }
+        .results-title { font-size: 1.5rem; margin-bottom: 1rem; }
+        .error { color: #ff8989; background-color: rgba(255, 137, 137, 0.1); border: 1px solid rgba(255, 137, 137, 0.3); padding: 1rem; border-radius: 6px; }
+        pre { background: var(--surface-color); border: 1px solid var(--border-color); padding: 1.5rem; border-radius: 8px; white-space: pre-wrap; word-wrap: break-word; }
+        .results-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 1.5rem; }
+        .app-card { background-color: var(--surface-color); border: 1px solid var(--border-color); border-radius: 8px; padding: 1rem; text-decoration: none; color: var(--text-primary); transition: background-color 0.2s, transform 0.2s; display: flex; flex-direction: column; gap: 0.75rem; }
+        .app-card:hover { background-color: var(--button-light-hover-bg); transform: translateY(-4px); }
+        .card-header { display: flex; gap: 1rem; align-items: center; }
+        .card-icon { width: 50px; height: 50px; border-radius: 10px; flex-shrink: 0; }
+        .card-info { flex-grow: 1; }
+        .card-info h3 { margin: 0 0 0.2rem 0; font-size: 1rem; }
+        .card-info p { margin: 0; font-size: 0.85rem; color: var(--text-secondary); }
+        .card-description { font-size: 0.9rem; color: var(--text-secondary); flex-grow: 1; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+        .card-footer { display: flex; justify-content: space-between; align-items: center; font-size: 0.9rem; font-weight: 500; }
+        .card-score { display: flex; align-items: center; gap: 0.25rem; color: var(--star-color); }
+        .app-details-card { background-color: var(--surface-color); border: 1px solid var(--border-color); padding: 1.5rem; border-radius: 8px; }
+        .app-header { display: flex; align-items: center; gap: 1rem; margin-bottom: 1.5rem; }
+        .app-icon { width: 80px; height: 80px; border-radius: 16px; flex-shrink: 0; }
+        .app-title-group h1 { font-size: 1.75rem; margin: 0; }
+        .app-title-group a { color: var(--accent-primary); text-decoration: none; font-size: 1rem; }
+        .app-title-group a:hover { text-decoration: underline; }
+        .app-summary { font-style: italic; color: var(--text-secondary); margin-bottom: 1.5rem; }
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem; margin: 1.5rem 0; }
+        .stat-item { background-color: var(--bg-color); padding: 1rem; border-radius: 6px; text-align: center; }
+        .stat-label { font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 0.5rem; text-transform: uppercase; }
+        .stat-value { font-size: 1.2rem; font-weight: 600; }
+        .section-title { font-weight: 600; font-size: 1.25rem; margin-top: 2rem; margin-bottom: 1rem; padding-bottom: 0.75rem; border-bottom: 1px solid var(--border-color); }
+        .description-box { white-space: pre-wrap; line-height: 1.6; color: var(--text-secondary); }
+        .screenshots-container { display: flex; gap: 1rem; overflow-x: auto; padding-bottom: 1rem; }
+        .screenshot-img { height: 300px; border-radius: 8px; }
+        .details-list { list-style: none; padding: 0; }
+        .details-list li { display: flex; justify-content: space-between; padding: 0.75rem 0; border-bottom: 1px solid var(--border-color); }
+        .details-list li:last-child { border-bottom: none; }
+        .details-list strong { color: var(--text-secondary); }
+        .rating-distribution { display: flex; gap: 1.5rem; align-items: center; }
+        .rating-summary { text-align: center; flex-shrink: 0; }
+        .rating-score { font-size: 2.5rem; font-weight: bold; }
+        .rating-count { color: var(--text-secondary); font-size: 0.9rem; }
+        .histogram { flex-grow: 1; }
+        .histogram-row { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.25rem; font-size: 0.9rem; }
+        .histogram-label { color: var(--text-secondary); width: 20px; }
+        .bar-container { flex-grow: 1; background-color: var(--bg-color); border-radius: 4px; overflow: hidden; }
+        .bar { height: 10px; background-color: var(--star-color); border-radius: 4px; }
+        .permission-group h4 { margin-top: 1.5rem; }
+        .permission-list { list-style: disc; padding-left: 1.5rem; color: var(--text-secondary); }
+        .suggestion-list { list-style: none; padding: 0; }
+        .suggestion-item { background-color: var(--surface-color); border: 1px solid var(--border-color); padding: 1rem; border-radius: 6px; margin-bottom: 0.5rem; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <nav class="tabs-header">
+            <button class="tab-link" data-tab="app-details">App Details</button>
+            <button class="tab-link" data-tab="search-apps">Search Apps</button>
+            <button class="tab-link" data-tab="top-charts">Top Charts</button>
+            <button class="tab-link" data-tab="similar-apps">Similar Apps</button>
+            <button class="tab-link" data-tab="suggestions">Suggestions</button>
+        </nav>
+        
+        <div id="app-details" class="tab-content"><h2 class="form-title">Get App Details</h2><form method="post"><div class="search-container"><div class="search-wrapper"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg><input type="text" name="package_name" class="search-input" placeholder="Enter package name" value="{{ form.package_name or 'com.whatsapp' }}"></div><button type="submit" name="submit_app_details" class="search-button">Search</button></div><div class="filter-controls"><div class="filter-chip-select"><span>Region:</span><select name="region" class="filter-select">{% for code, region in regions.items() %}<option value="{{ code }}" {% if code == selected_region %}selected{% endif %}>{{ region.name }}</option>{% endfor %}</select></div></div></form></div>
+        <div id="search-apps" class="tab-content"><h2 class="form-title">Search Apps</h2><form method="post"><div class="search-container"><div class="search-wrapper"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg><input type="text" name="search_query" class="search-input" placeholder="Filter or search by text..." value="{{ form.search_query or 'social media' }}"></div><button type="submit" name="submit_search" class="search-button">Search</button></div><div class="filter-controls"><div class="filter-chip-select"><span>Region:</span><select name="region" class="filter-select">{% for code, region in regions.items() %}<option value="{{ code }}" {% if code == selected_region %}selected{% endif %}>{{ region.name }}</option>{% endfor %}</select></div><div class="filter-chip"><span>Results:</span><input name="count" type="number" class="count-input" value="{{ form.count or 10 }}"></div></div></form></div>
+        <div id="top-charts" class="tab-content"><h2 class="form-title">Get Top Charts</h2><form method="post"><div class="search-container"><div class="filter-chip-select" style="flex-grow: 1;"><span>Chart:</span><select name="chart_type" class="filter-select" style="width:100%">{% for type in ['TOP_FREE', 'TOP_PAID', 'TOP_GROSSING'] %}<option value="{{ type }}" {% if type == form.chart_type %}selected{% endif %}>{{ type.replace('_', ' ') }}</option>{% endfor %}</select></div><div class="filter-chip-select" style="flex-grow: 1;"><span>Category:</span><select name="category_type" class="filter-select" style="width:100%">{% for type in ['APPLICATION', 'GAME'] %}<option value="{{ type }}" {% if type == form.category_type %}selected{% endif %}>{{ type.title() }}</option>{% endfor %}</select></div></div><div class="filter-controls"><div class="filter-chip-select"><span>Region:</span><select name="region" class="filter-select">{% for code, region in regions.items() %}<option value="{{ code }}" {% if code == selected_region %}selected{% endif %}>{{ region.name }}</option>{% endfor %}</select></div><div class="filter-chip"><span>Results:</span><input name="count" type="number" class="count-input" value="{{ form.count or 20 }}"></div><button type="submit" name="submit_list" class="search-button">Fetch Chart</button></div></form></div>
+        <div id="similar-apps" class="tab-content"><h2 class="form-title">Find Similar Apps</h2><form method="post"><div class="search-container"><div class="search-wrapper"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg><input type="text" name="similar_package" class="search-input" placeholder="Enter package name" value="{{ form.similar_package or 'com.whatsapp' }}"></div><button type="submit" name="submit_similar" class="search-button">Search</button></div><div class="filter-controls"><div class="filter-chip-select"><span>Region:</span><select name="region" class="filter-select">{% for code, region in regions.items() %}<option value="{{ code }}" {% if code == selected_region %}selected{% endif %}>{{ region.name }}</option>{% endfor %}</select></div><div class="filter-chip"><span>Results:</span><input name="count" type="number" class="count-input" value="{{ form.count or 20 }}"></div></div></form></div>
+        <div id="suggestions" class="tab-content"><h2 class="form-title">Get Search Suggestions</h2><form method="post"><div class="search-container"><div class="search-wrapper"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg><input type="text" name="suggest_query" class="search-input" placeholder="Enter keyword for suggestions" value="{{ form.suggest_query or 'fitness' }}"></div><button type="submit" name="submit_suggest" class="search-button">Search</button></div><div class="filter-controls"><div class="filter-chip-select"><span>Region:</span><select name="region" class="filter-select">{% for code, region in regions.items() %}<option value="{{ code }}" {% if code == selected_region %}selected{% endif %}>{{ region.name }}</option>{% endfor %}</select></div><div class="filter-chip"><span>Results:</span><input name="count" type="number" class="count-input" value="{{ form.count or 5 }}"></div></div></form></div>
+
+        {% if error or data or data_output %}
+        <div class="results-section">
+            <h2 class="results-title">Results for: {{ last_action }}</h2>
+            {% if error %}<div class="error">{{ error }}</div>
+            {% elif last_action == 'App Details' and data %}
+            <div class="app-details-card">
+                <header class="app-header"><img src="{{ data.icon }}" alt="App Icon" class="app-icon"><div class="app-title-group"><h1>{{ data.title }}</h1><a href="{{ data.developerWebsite }}" target="_blank">{{ data.developer }}</a></div></header>
+                <p class="app-summary">{{ data.summary }}</p><h3 class="section-title">Key Statistics</h3><div class="stats-grid"><div class="stat-item"><div class="stat-label">Rating</div><div class="stat-value">⭐ {% if data.score %}{{ "%.1f"|format(data.score) }}{% else %}N/A{% endif %}</div></div><div class="stat-item"><div class="stat-label">Installs</div><div class="stat-value">{{ data.installs or 'N/A' }}</div></div><div class="stat-item"><div class="stat-label">Total Ratings</div><div class="stat-value">{% if data.ratings is not none %}{{ "{:,.0f}".format(data.ratings) }}{% else %}N/A{% endif %}</div></div><div class="stat-item"><div class="stat-label">Total Reviews</div><div class="stat-value">{% if data.reviews is not none %}{{ "{:,.0f}".format(data.reviews) }}{% else %}N/A{% endif %}</div></div></div>
+                {% if data.histogram and (data.histogram | sum > 0) %}<h3 class="section-title">Rating Distribution</h3><div class="rating-distribution"><div class="rating-summary"><div class="rating-score">{% if data.score %}{{ "%.1f"|format(data.score) }}{% else %}N/A{% endif %}</div><div class="rating-count">{% if data.ratings is not none %}{{ "{:,.0f}".format(data.ratings) }} ratings{% endif %}</div></div><div class="histogram">{% set total_ratings = data.histogram | sum %}{% for i in range(5, 0, -1) %}<div class="histogram-row"><span class="histogram-label">{{ i }}★</span><div class="bar-container"><div class="bar" style="width: {{ (data.histogram[i-1] / total_ratings) * 100 }}%;"></div></div></div>{% endfor %}</div></div>{% endif %}
+                <h3 class="section-title">Detailed Installments</h3><ul class="details-list"><li><strong>Min Installs</strong> <span>{% if data.minInstalls is not none %}{{ "{:,.0f}".format(data.minInstalls) }}{% else %}N/A{% endif %}</span></li><li><strong>Real Installs</strong> <span>{% if data.realInstalls is not none %}{{ "{:,.0f}".format(data.realInstalls) }}{% else %}N/A{% endif %}</span></li><li><strong>Daily Installs</strong> <span>{% if data.minDailyInstalls is not none %}{{ "{:,.0f}".format(data.minDailyInstalls) }} ~ {{ "{:,.0f}".format(data.realDailyInstalls) }}{% else %}N/A{% endif %}</span></li><li><strong>Monthly Installs</strong> <span>{% if data.minMonthlyInstalls is not none %}{{ "{:,.0f}".format(data.minMonthlyInstalls) }} ~ {{ "{:,.0f}".format(data.realMonthlyInstalls) }}{% else %}N/A{% endif %}</span></li></ul>
+                <h3 class="section-title">Screenshots</h3><div class="screenshots-container">{% for url in data.screenshots %}<img src="{{ url }}" class="screenshot-img">{% endfor %}</div>
+                <h3 class="section-title">Description</h3><p class="description-box">{{ data.description }}</p>
+                {% if data.whatsNew %}<h3 class="section-title">What's New</h3><div class="description-box"><ul style="padding-left: 1rem;">{% for item in data.whatsNew %}<li>{{ item }}</li>{% endfor %}</ul></div>{% endif %}
+                <h3 class="section-title">Additional Information</h3><ul class="details-list"><li><strong>Last Updated</strong> <span>{{ data.lastUpdated or 'N/A' }}</span></li><li><strong>Released</strong> <span>{{ data.released or 'N/A' }}</span></li><li><strong>Content Rating</strong> <span>{{ data.contentRating or 'N/A' }}</span></li><li><strong>In-App Products</strong> <span>{{ data.inAppProductPrice or 'None' }}</span></li><li><strong>Developer Email</strong> <span><a href="mailto:{{ data.developerEmail }}">{{ data.developerEmail or 'N/A' }}</a></span></li></ul>
+                {% if data.permissions %}<h3 class="section-title">App Permissions</h3><div class="permission-group">{% if data.permissions is mapping %}{% for category, perms in data.permissions.items() %}<h4>{{ category }}</h4><ul class="permission-list">{% for p in perms %}<li>{{ p }}</li>{% endfor %}</ul>{% endfor %}{% else %}<ul class="permission-list">{% for p in data.permissions %}<li>{{ p }}</li>{% endfor %}</ul>{% endif %}</div>{% endif %}
+            </div>
+            {% elif last_action in ['Search Apps', 'Top Charts', 'Similar Apps'] and data %}
+            <div class="results-grid">
+                {% for app in data %}
+                <a href="{{ app.url }}" target="_blank" class="app-card">
+                    <div class="card-header"><img src="{{ app.icon }}" alt="{{ app.title }} icon" class="card-icon"><div class="card-info"><h3>{{ app.title }}</h3><p>{{ app.developer }}</p></div></div>
+                    {% if app.description %}<p class="card-description">{{ app.description }}</p>{% endif %}
+                    <div class="card-footer">
+                        <div class="card-score"><span>⭐</span><span>{{ app.scoreText or 'N/A' }}</span></div>
+                        {% if app.genre %}<span class="card-genre">{{ app.genre }}</span>{% endif %}
+                    </div>
+                </a>
+                {% endfor %}
+            </div>
+            {% elif last_action == 'Suggestions' and data %}
+            <ul class="suggestion-list">{% for suggestion in data %}<li class="suggestion-item">{{ suggestion }}</li>{% endfor %}</ul>
+            {% elif data_output %}<pre>{{ data_output }}</pre>{% endif %}
+        </div>
+        {% endif %}
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const tabs = document.querySelectorAll('.tab-link');
+            const contents = document.querySelectorAll('.tab-content');
+            function switchTab(tabId) { contents.forEach(content => content.classList.remove('active')); tabs.forEach(tab => tab.classList.remove('active')); document.getElementById(tabId).classList.add('active'); document.querySelector(`.tab-link[data-tab="${tabId}"]`).classList.add('active'); }
+            tabs.forEach(tab => { tab.addEventListener('click', (e) => { e.preventDefault(); switchTab(tab.getAttribute('data-tab')); }); });
+            switchTab("{{ active_tab }}");
+        });
+    </script>
+</body>
+</html>
