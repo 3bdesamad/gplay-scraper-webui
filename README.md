@@ -30,51 +30,6 @@ A modern, clean, and user-friendly web interface for the powerful `gplay-scraper
 
 ---
 
-## Setup and Installation
-
-Follow these steps to get the project running locally.
-
-### 1. Prerequisites
-
-Make sure you have Python 3.7+ installed on your system.
-
-### 2. Clone the Repository
-
-```bash
-git clone [https://github.com/YOUR_USERNAME/gplay-scraper-webui.git](https://github.com/YOUR_USERNAME/gplay-scraper-webui.git)
-cd gplay-scraper-webui
-```
-
-### 3. Create a Virtual Environment (Recommended)
-
-```bash
-# For Windows
-python -m venv venv
-venv\Scripts\activate
-
-# For macOS/Linux
-python3 -m venv venv
-source venv/bin/activate
-```
-
-### 4. Install Dependencies
-
-You'll need to create a `requirements.txt` file. Create a new file named `requirements.txt` in your project folder and add the following lines:
-
-```
-Flask
-gplay-scraper
-curl_cffi
-```
-
-Now, run the installation command:
-
-```bash
-pip install -r requirements.txt
-```
-
----
-
 ## How to Run
 
 With your virtual environment activated and dependencies installed, run the Flask application:
