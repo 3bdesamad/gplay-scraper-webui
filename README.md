@@ -1,4 +1,4 @@
-# GPlay Scraper Web UI
+# Google Play Scraper Web UI
 
 ![Python](https://img.shields.io/badge/Python-3.7+-blue.svg)
 ![Flask](https://img.shields.io/badge/Flask-2.0-orange.svg)
