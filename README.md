@@ -31,20 +31,6 @@ A modern, clean, and user-friendly web interface for the powerful `gplay-scraper
 
 ---
 
-## 🚀 Installation
-
-### Install from PyPI
-```bash
-pip install gplay-scraper
-```
-
-### Or install in development mode
-```bash
-pip install -e .
-```
-
----
-
 ## How to Run
 
 With your virtual environment activated and dependencies installed, run the Flask application:
