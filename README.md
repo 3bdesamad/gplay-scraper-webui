@@ -45,7 +45,7 @@ Open your web browser and navigate to **`http://127.0.0.1:5000`**. The web UI sh
 
 ## Acknowledgements
 
-This project provides a web interface for the excellent **[gplay-scraper](https://github.com/Mohammedcha/gplay-scraper)** library created by Mohammedcha. All scraping functionality is powered by this source library.
+This project provides a web interface for the excellent **[gplay-scraper](https://github.com/Mohammedcha/gplay-scraper)** library created by Mohammed Cha. All scraping functionality is powered by this source library.
 
 ---
 
