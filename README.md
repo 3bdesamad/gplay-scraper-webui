@@ -24,9 +24,24 @@ A modern, clean, and user-friendly web interface for the powerful `gplay-scraper
 
 ## Tech Stack
 
-- **Backend:** Python, Flask
+- **Backend:** Python, Flask (`pip install Flask`)
 - **Frontend:** HTML, CSS
-- **Scraping Library:** [gplay-scraper](https://github.com/Mohammedcha/gplay-scraper)
+- **Scraping Library:** [gplay-scraper](https://github.com/Mohammedcha/gplay-scraper) (`pip install gplay-scraper`)
+- **HTTP Client:** curl_cffi (`pip install curl_cffi`)
+
+---
+
+## 🚀 Installation
+
+### Install from PyPI
+```bash
+pip install gplay-scraper
+```
+
+### Or install in development mode
+```bash
+pip install -e .
+```
 
 ---
 
@@ -35,7 +50,7 @@ A modern, clean, and user-friendly web interface for the powerful `gplay-scraper
 With your virtual environment activated and dependencies installed, run the Flask application:
 
 ```bash
-python app.py
+python gplay.py
 ```
 
 Open your web browser and navigate to **`http://127.0.0.1:5000`**. The web UI should now be running.
