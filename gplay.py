@@ -3,8 +3,16 @@ from gplay_scraper import GPlayScraper
 import io
 import sys
 import json
+import re
+import time
 
 app = Flask(__name__)
+
+# --- Cache dictionary to store results and a timestamp ---
+cache = {}
+# Set cache duration to 1 hour (3600 seconds)
+CACHE_DURATION = 3600
+
 scraper = GPlayScraper(http_client="curl_cffi")
 
 REGIONS = {
@@ -45,91 +53,126 @@ def index():
     active_tab = 'app-details'
     form_values = request.form
 
-    # --- NEW: CLICK-TO-SCRAPE HANDLER ---
-    # If a package_name is in the URL, we treat it like a form submission
     if request.method == "GET" and 'package_name' in request.args:
         from werkzeug.datastructures import MultiDict
         form_values = MultiDict({
             'package_name': request.args.get('package_name'),
-            'submit_app_details': 'Search' # Simulate button press
+            'submit_app_details': 'Search'
         })
         active_tab = 'app-details'
-        request.method = "POST" # Force the code to enter the POST logic block
+        request.method = "POST"
     
     selected_region_code = form_values.get('region', 'us')
     selected_lang = REGIONS[selected_region_code]['lang']
     selected_country = selected_region_code
     
     if request.method == "POST":
-        buffer = io.StringIO()
-        old_stdout = sys.stdout
-        sys.stdout = buffer
-
-        try:
-            if 'submit_app_details' in form_values:
-                last_action, active_tab = 'App Details', 'app-details'
-                package_name = form_values.get("package_name", "").strip()
-                if not package_name: raise ValueError("Package Name is required.")
-                scraper.app_print_all(package_name, lang=selected_lang, country=selected_country)
-            
-            # --- NEW: COMPARE APPS LOGIC ---
-            elif 'submit_compare' in form_values:
-                last_action, active_tab = 'Compare', 'compare-apps'
-                pkg1 = form_values.get("package1", "").strip()
-                pkg2 = form_values.get("package2", "").strip()
-                if not pkg1 or not pkg2: raise ValueError("Both package names are required.")
-                # Scrape both apps; the output will be captured together
-                scraper.app_print_all(pkg1, lang=selected_lang, country=selected_country)
-                scraper.app_print_all(pkg2, lang=selected_lang, country=selected_country)
-
-            elif 'submit_search' in form_values:
-                last_action, active_tab = 'Search', 'search-apps'
-                query = form_values.get("search_query", "").strip()
-                count = int(form_values.get("count", 20))
-                if not query: raise ValueError("Search Query is required.")
-                scraper.search_print_all(query, count=count, lang=selected_lang, country=selected_country)
-
-            elif 'submit_list' in form_values:
-                last_action, active_tab = 'Top Charts', 'top-charts'
-                chart = form_values.get("chart_type")
-                category = form_values.get("category_type")
-                count = int(form_values.get("count", 20))
-                scraper.list_print_all(chart, category, count=count, lang=selected_lang, country=selected_country)
-
-            elif 'submit_similar' in form_values:
-                last_action, active_tab = 'Similar', 'similar-apps'
-                package_name = form_values.get("similar_package", "").strip()
-                count = int(form_values.get("count", 20))
-                if not package_name: raise ValueError("Package Name is required.")
-                scraper.similar_print_all(package_name, count=count, lang=selected_lang, country=selected_country)
-
-            elif 'submit_suggest' in form_values:
-                last_action, active_tab = 'Suggestions', 'suggestions'
-                query = form_values.get("suggest_query", "").strip()
-                count = int(form_values.get("count", 5))
-                if not query: raise ValueError("Suggestion Query is required.")
-                scraper.suggest_print_all(query, count=count, lang=selected_lang, country=selected_country)
         
-        except Exception as e:
-            error = f"An error occurred: {str(e)}"
+        # --- CACHE LOGIC ---
+        # Create a unique key for the cache based on the form submission
+        cache_key = str(sorted(form_values.items()))
         
-        finally:
-            sys.stdout = old_stdout
-            captured_text = buffer.getvalue()
-            
+        # Check if a valid, non-expired result is in the cache
+        if cache_key in cache and time.time() - cache[cache_key]['timestamp'] < CACHE_DURATION:
+            print("Serving from cache!")
+            # Load all data directly from the cache
+            cached_data = cache[cache_key]
+            captured_text = cached_data.get('captured_text')
+            last_action = cached_data.get('last_action')
+            active_tab = cached_data.get('active_tab')
+            error = cached_data.get('error')
+        
+        else:
+            print("Performing new scrape!")
+            buffer = io.StringIO()
+            old_stdout = sys.stdout
+            sys.stdout = buffer
+
             try:
-                if (last_action == 'App Details') and captured_text:
+                if 'submit_app_details' in form_values:
+                    last_action, active_tab = 'App Details', 'app-details'
+                    package_name = form_values.get("package_name", "").strip()
+                    if not package_name: raise ValueError("Package Name is required.")
+                    scraper.app_print_all(package_name, lang=selected_lang, country=selected_country)
+                
+                elif 'submit_compare' in form_values:
+                    last_action, active_tab = 'Compare', 'compare-apps'
+                    pkg1 = form_values.get("package1", "").strip()
+                    pkg2 = form_values.get("package2", "").strip()
+                    if not pkg1 or not pkg2: raise ValueError("Both package names are required.")
+                    scraper.app_print_all(pkg1, lang=selected_lang, country=selected_country)
+                    scraper.app_print_all(pkg2, lang=selected_lang, country=selected_country)
+
+                elif 'submit_search' in form_values:
+                    last_action, active_tab = 'Search', 'search-apps'
+                    query = form_values.get("search_query", "").strip()
+                    count = int(form_values.get("count", 20))
+                    if not query: raise ValueError("Search Query is required.")
+                    scraper.search_print_all(query, count=count, lang=selected_lang, country=selected_country)
+
+                elif 'submit_list' in form_values:
+                    last_action, active_tab = 'Top Charts', 'top-charts'
+                    chart = form_values.get("chart_type")
+                    category = form_values.get("category_type")
+                    count = int(form_values.get("count", 20))
+                    scraper.list_print_all(chart, category, count=count, lang=selected_lang, country=selected_country)
+
+                elif 'submit_similar' in form_values:
+                    last_action, active_tab = 'Similar', 'similar-apps'
+                    package_name = form_values.get("similar_package", "").strip()
+                    count = int(form_values.get("count", 20))
+                    if not package_name: raise ValueError("Package Name is required.")
+                    scraper.similar_print_all(package_name, count=count, lang=selected_lang, country=selected_country)
+
+                elif 'submit_suggest' in form_values:
+                    last_action, active_tab = 'Suggestions', 'suggestions'
+                    query = form_values.get("suggest_query", "").strip()
+                    count = int(form_values.get("count", 5))
+                    if not query: raise ValueError("Suggestion Query is required.")
+                    scraper.suggest_print_nested(query, count=count)
+            
+            except Exception as e:
+                error = f"An error occurred: {str(e)}"
+            
+            finally:
+                sys.stdout = old_stdout
+                captured_text = buffer.getvalue()
+                
+                # --- CACHE LOGIC ---
+                # Store the result in the cache
+                cache[cache_key] = {
+                    'captured_text': captured_text,
+                    'last_action': last_action,
+                    'active_tab': active_tab,
+                    'error': error,
+                    'timestamp': time.time()
+                }
+
+        # This part for parsing the JSON runs for both cached and new results
+        try:
+            if not error and captured_text:
+                if (last_action == 'App Details'):
                     data = json.loads(captured_text)
-                # Compare and Search use the same stream parser
-                elif (last_action in ['Search', 'Compare']) and captured_text:
+                    # Create a URL-friendly slug for the APKPure link
+                    if data and 'title' in data:
+                        slug = data['title'].lower()
+                        slug = re.sub(r'[^a-z0-9\s-]', '', slug) # Remove special characters except spaces/hyphens
+                        slug = re.sub(r'\s+', '-', slug).strip('-') # Replace spaces with hyphens
+                        data['apkpureSlug'] = slug
+                
+                elif (last_action in ['Search', 'Compare']):
                     data = parse_json_stream(captured_text)
-                elif (last_action in ['Top Charts', 'Similar', 'Suggestions']) and captured_text:
+                elif (last_action in ['Top Charts', 'Similar', 'Suggestions']):
                     data = json.loads(captured_text)
                 else:
                     data_output = captured_text
-            except json.JSONDecodeError:
-                error = f"Failed to parse results for {last_action}."
-                data_output = captured_text
+        except json.JSONDecodeError:
+            error = f"Failed to parse results for {last_action}."
+            data_output = captured_text
+            # --- CACHE LOGIC ---
+            # Update cache if there was a parsing error
+            if cache_key in cache:
+                cache[cache_key]['error'] = error
 
     return render_template(
         "index.html", data=data, data_output=data_output, error=error, 
