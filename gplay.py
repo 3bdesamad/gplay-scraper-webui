@@ -8,7 +8,7 @@ app = Flask(__name__)
 scraper = GPlayScraper(http_client="curl_cffi")
 
 REGIONS = {
-    'us': {'name': 'United States', 'lang': 'en'}, 'sa': {'name': 'Arabic', 'lang': 'ar'},
+    'us': {'name': 'United States', 'lang': 'en'}, 'ar': {'name': 'Arabic', 'lang': 'ar'},
     'fr': {'name': 'France', 'lang': 'fr'}, 'es': {'name': 'Spain', 'lang': 'es'},
     'de': {'name': 'Germany', 'lang': 'de'}, 'it': {'name': 'Italy', 'lang': 'it'},
     'se': {'name': 'Sweden', 'lang': 'sv'}, 'no': {'name': 'Norway', 'lang': 'no'},
