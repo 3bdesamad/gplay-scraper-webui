@@ -19,6 +19,7 @@ A modern, clean, and user-friendly web interface for the powerful `gplay-scraper
 - **Similar Apps:** Find apps similar to a given package name.
 - **Search Suggestions:** Get keyword suggestions.
 - **Region Control:** Easily select the country and language for your queries using a single dropdown.
+- **Compare Two Apps: Instantly compare two apps side-by-side, including their ratings, installs, reviews, developer details, release dates, and more — all displayed in a clean, responsive comparison table.
 
 ---
 
