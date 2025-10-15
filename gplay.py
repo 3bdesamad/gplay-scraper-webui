@@ -76,7 +76,7 @@ def index():
             elif 'submit_search' in form_values:
                 last_action, active_tab = 'Search Apps', 'search-apps'
                 query = form_values.get("search_query", "").strip()
-                count = int(form_values.get("count", 12))
+                count = int(form_values.get("count", 21))
                 if not query: raise ValueError("Search Query is required.")
                 scraper.search_print_all(query, count=count, lang=selected_lang, country=selected_country)
 
