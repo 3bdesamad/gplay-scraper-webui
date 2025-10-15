@@ -8,16 +8,25 @@ app = Flask(__name__)
 scraper = GPlayScraper(http_client="curl_cffi")
 
 REGIONS = {
-    'us': {'name': 'United States', 'lang': 'en'}, 'ar': {'name': 'Arabic', 'lang': 'ar'},
-    'fr': {'name': 'France', 'lang': 'fr'}, 'es': {'name': 'Spain', 'lang': 'es'},
-    'de': {'name': 'Germany', 'lang': 'de'}, 'it': {'name': 'Italy', 'lang': 'it'},
-    'se': {'name': 'Sweden', 'lang': 'sv'}, 'no': {'name': 'Norway', 'lang': 'no'},
-    'nl': {'name': 'Netherlands', 'lang': 'nl'}, 'ru': {'name': 'Russia', 'lang': 'ru'},
-    'jp': {'name': 'Japan', 'lang': 'ja'}, 'ko': {'name': 'South Korea', 'lang': 'ko'},
-    'br': {'name': 'Brazil', 'lang': 'pt'}, 'cn': {'name': 'China', 'lang': 'zh-CN'},
-    'th': {'name': 'Thailand', 'lang': 'th'}, 'tr': {'name': 'Turkey', 'lang': 'tr'},
+    'us': {'name': 'United States', 'lang': 'en'},
+    'ma': {'name': 'Arabic', 'lang': 'ar'},  # --- ma-ar ==> morocco - dz-ar ==> algeria  - eg-ar ==> egypt - sa-ar ==> saudi arabia - ae-ar ==> united arab emirates    ---
+    'fr': {'name': 'France', 'lang': 'fr'},
+    'es': {'name': 'Spain', 'lang': 'es'},
+    'de': {'name': 'Germany', 'lang': 'de'},
+    'it': {'name': 'Italy', 'lang': 'it'},
+    'se': {'name': 'Sweden', 'lang': 'sv'},
+    'no': {'name': 'Norway', 'lang': 'no'},
+    'nl': {'name': 'Netherlands', 'lang': 'nl'},
+    'ru': {'name': 'Russia', 'lang': 'ru'},
+    'jp': {'name': 'Japan', 'lang': 'ja'},
+    'ko': {'name': 'South Korea', 'lang': 'ko'},
+    'br': {'name': 'Brazil', 'lang': 'pt'},
+    'cn': {'name': 'China', 'lang': 'zh-CN'},
+    'th': {'name': 'Thailand', 'lang': 'th'},
+    'tr': {'name': 'Turkey', 'lang': 'tr'},
     'in': {'name': 'India', 'lang': 'hi'}
 }
+
 
 def parse_json_stream(text):
     decoder = json.JSONDecoder()
