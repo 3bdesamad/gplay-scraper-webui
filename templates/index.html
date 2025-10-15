@@ -63,17 +63,18 @@
         .app-title-group h1 { font-size: 1.75rem; margin: 0; }
         .app-title-group a { color: var(--accent-primary); text-decoration: none; font-size: 1rem; }
         .app-title-group a:hover { text-decoration: underline; }
+		.app-title-group a, .details-list a, footer a { color: var(--text-primary);font-weight: bold;text-decoration: none; }
         .app-summary { font-style: italic; color: var(--text-secondary); margin-bottom: 1.5rem; }
         .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem; margin: 1.5rem 0; }
         .stat-item { background-color: var(--bg-color); padding: 1rem; border-radius: 6px; text-align: center; }
         .stat-label { font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 0.5rem; text-transform: uppercase; }
         .stat-value { font-size: 1.2rem; font-weight: 600; }
         .section-title { font-weight: 600; font-size: 1.25rem; margin-top: 2rem; margin-bottom: 1rem; padding-bottom: 0.75rem; border-bottom: 1px solid var(--border-color); }
-        .description-box { white-space: pre-wrap; line-height: 1.6; color: var(--text-secondary); }
+        .description-box, .simple-list { white-space: pre-wrap; line-height: 1.6; color: var(--text-secondary); }
         .screenshots-container { display: flex; gap: 1rem; overflow-x: auto; padding-bottom: 1rem; }
         .screenshot-img { height: 300px; border-radius: 8px; }
         .details-list { list-style: none; padding: 0; }
-        .details-list li { display: flex; justify-content: space-between; padding: 0.75rem 0; border-bottom: 1px solid var(--border-color); }
+        .details-list li { display: flex; justify-content: space-between; flex-wrap: wrap; padding: 0.75rem 0; border-bottom: 1px solid var(--border-color); }
         .details-list li:last-child { border-bottom: none; }
         .details-list strong { color: var(--text-secondary); }
         .rating-distribution { display: flex; gap: 1.5rem; align-items: center; }
@@ -92,44 +93,44 @@
         footer { text-align: center; margin-top: 4rem; padding-top: 2rem; border-top: 1px solid var(--border-color); color: var(--text-secondary); font-size: 0.9rem; }
         footer a { color: var(--accent-primary); text-decoration: none; }
         footer a:hover { text-decoration: underline; }
+    
     </style>
 </head>
 <body>
 
     <div class="container">
-        <nav class="tabs-header">
-            <button class="tab-link" data-tab="app-details">App Details</button>
-            <button class="tab-link" data-tab="search-apps">Search Apps</button>
-            <button class="tab-link" data-tab="top-charts">Top Charts</button>
-            <button class="tab-link" data-tab="similar-apps">Similar Apps</button>
-            <button class="tab-link" data-tab="suggestions">Suggestions</button>
-        </nav>
-        
+        <nav class="tabs-header"><button class="tab-link" data-tab="app-details">App Details</button><button class="tab-link" data-tab="search-apps">Search Apps</button><button class="tab-link" data-tab="top-charts">Top Charts</button><button class="tab-link" data-tab="similar-apps">Similar Apps</button><button class="tab-link" data-tab="suggestions">Suggestions</button></nav>
         <div id="app-details" class="tab-content"><h2 class="form-title">Get App Details</h2><form method="post"><div class="search-container"><div class="search-wrapper"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg><input type="text" name="package_name" class="search-input" placeholder="Enter package name" value="{{ form.package_name or 'com.whatsapp' }}"></div><div class="filter-chip-select"><span>Region:</span><select name="region" class="filter-select">{% for code, region in regions.items() %}<option value="{{ code }}" {% if code == selected_region %}selected{% endif %}>{{ region.name }}</option>{% endfor %}</select></div><button type="submit" name="submit_app_details" class="search-button">Search</button></div></form></div>
-        
         <div id="search-apps" class="tab-content"><h2 class="form-title">Search Apps</h2><form method="post"><div class="search-container"><div class="search-wrapper"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg><input type="text" name="search_query" class="search-input" placeholder="Filter or search by text..." value="{{ form.search_query or 'social media' }}"></div><div class="filter-chip-select"><span>Region:</span><select name="region" class="filter-select">{% for code, region in regions.items() %}<option value="{{ code }}" {% if code == selected_region %}selected{% endif %}>{{ region.name }}</option>{% endfor %}</select></div><div class="filter-chip"><span>Results:</span><input name="count" type="number" class="count-input" value="{{ form.count or 10 }}"></div><button type="submit" name="submit_search" class="search-button">Search</button></div></form></div>
-        
         <div id="top-charts" class="tab-content"><h2 class="form-title">Get Top Charts</h2><form method="post"><div class="search-container"><div class="filter-chip-select" style="flex-grow: 1;"><span>Chart:</span><select name="chart_type" class="filter-select" style="width:100%">{% for type in ['TOP_FREE', 'TOP_PAID', 'TOP_GROSSING'] %}<option value="{{ type }}" {% if type == form.chart_type %}selected{% endif %}>{{ type.replace('_', ' ') }}</option>{% endfor %}</select></div><div class="filter-chip-select" style="flex-grow: 1;"><span>Category:</span><select name="category_type" class="filter-select" style="width:100%">{% for type in ['APPLICATION', 'GAME'] %}<option value="{{ type }}" {% if type == form.category_type %}selected{% endif %}>{{ type.title() }}</option>{% endfor %}</select></div></div><div class="filter-controls"><div class="filter-chip-select"><span>Region:</span><select name="region" class="filter-select">{% for code, region in regions.items() %}<option value="{{ code }}" {% if code == selected_region %}selected{% endif %}>{{ region.name }}</option>{% endfor %}</select></div><div class="filter-chip"><span>Results:</span><input name="count" type="number" class="count-input" value="{{ form.count or 20 }}"></div><button type="submit" name="submit_list" class="search-button">Fetch Chart</button></div></form></div>
-        
         <div id="similar-apps" class="tab-content"><h2 class="form-title">Find Similar Apps</h2><form method="post"><div class="search-container"><div class="search-wrapper"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg><input type="text" name="similar_package" class="search-input" placeholder="Enter package name" value="{{ form.similar_package or 'com.whatsapp' }}"></div><div class="filter-chip-select"><span>Region:</span><select name="region" class="filter-select">{% for code, region in regions.items() %}<option value="{{ code }}" {% if code == selected_region %}selected{% endif %}>{{ region.name }}</option>{% endfor %}</select></div><div class="filter-chip"><span>Results:</span><input name="count" type="number" class="count-input" value="{{ form.count or 20 }}"></div><button type="submit" name="submit_similar" class="search-button">Search</button></div></form></div>
-        
         <div id="suggestions" class="tab-content"><h2 class="form-title">Get Search Suggestions</h2><form method="post"><div class="search-container"><div class="search-wrapper"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg><input type="text" name="suggest_query" class="search-input" placeholder="Enter keyword for suggestions" value="{{ form.suggest_query or 'fitness' }}"></div><div class="filter-chip-select"><span>Region:</span><select name="region" class="filter-select">{% for code, region in regions.items() %}<option value="{{ code }}" {% if code == selected_region %}selected{% endif %}>{{ region.name }}</option>{% endfor %}</select></div><button type="submit" name="submit_suggest" class="search-button">Search</button></div></form></div>
 
         {% if error or data or data_output %}
         <div class="results-section">
             <h2 class="results-title">Results for: {{ last_action }}</h2>
             {% if error %}<div class="error">{{ error }}</div>
+            
             {% elif last_action == 'App Details' and data %}
             <div class="app-details-card">
                 <header class="app-header"><img src="{{ data.icon }}" alt="App Icon" class="app-icon"><div class="app-title-group"><h1>{{ data.title }}</h1><a href="{{ data.developerWebsite }}" target="_blank">{{ data.developer }}</a></div></header>
                 <p class="app-summary">{{ data.summary }}</p><h3 class="section-title">Key Statistics</h3><div class="stats-grid"><div class="stat-item"><div class="stat-label">Rating</div><div class="stat-value">⭐ {% if data.score %}{{ "%.1f"|format(data.score) }}{% else %}N/A{% endif %}</div></div><div class="stat-item"><div class="stat-label">Installs</div><div class="stat-value">{{ data.installs or 'N/A' }}</div></div><div class="stat-item"><div class="stat-label">Total Ratings</div><div class="stat-value">{% if data.ratings is not none %}{{ "{:,.0f}".format(data.ratings) }}{% else %}N/A{% endif %}</div></div><div class="stat-item"><div class="stat-label">Total Reviews</div><div class="stat-value">{% if data.reviews is not none %}{{ "{:,.0f}".format(data.reviews) }}{% else %}N/A{% endif %}</div></div></div>
                 {% if data.histogram and (data.histogram | sum > 0) %}<h3 class="section-title">Rating Distribution</h3><div class="rating-distribution"><div class="rating-summary"><div class="rating-score">{% if data.score %}{{ "%.1f"|format(data.score) }}{% else %}N/A{% endif %}</div><div class="rating-count">{% if data.ratings is not none %}{{ "{:,.0f}".format(data.ratings) }} ratings{% endif %}</div></div><div class="histogram">{% set total_ratings = data.histogram | sum %}{% for i in range(5, 0, -1) %}<div class="histogram-row"><span class="histogram-label">{{ i }}★</span><div class="bar-container"><div class="bar" style="width: {{ (data.histogram[i-1] / total_ratings) * 100 }}%;"></div></div></div>{% endfor %}</div></div>{% endif %}
-                <h3 class="section-title">Detailed Installments</h3><ul class="details-list"><li><strong>Min Installs</strong> <span>{% if data.minInstalls is not none %}{{ "{:,.0f}".format(data.minInstalls) }}{% else %}N/A{% endif %}</span></li><li><strong>Real Installs</strong> <span>{% if data.realInstalls is not none %}{{ "{:,.0f}".format(data.realInstalls) }}{% else %}N/A{% endif %}</span></li><li><strong>Daily Installs</strong> <span>{% if data.minDailyInstalls is not none %}{{ "{:,.0f}".format(data.minDailyInstalls) }} ~ {{ "{:,.0f}".format(data.realDailyInstalls) }}{% else %}N/A{% endif %}</span></li><li><strong>Monthly Installs</strong> <span>{% if data.minMonthlyInstalls is not none %}{{ "{:,.0f}".format(data.minMonthlyInstalls) }} ~ {{ "{:,.0f}".format(data.realMonthlyInstalls) }}{% else %}N/A{% endif %}</span></li></ul>
+                <h3 class="section-title">Installment Metrics</h3><ul class="details-list"><li><strong>Min Installs</strong> <span>{% if data.minInstalls is not none %}{{ "{:,.0f}".format(data.minInstalls) }}{% else %}N/A{% endif %}</span></li><li><strong>Real Installs</strong> <span>{% if data.realInstalls is not none %}{{ "{:,.0f}".format(data.realInstalls) }}{% else %}N/A{% endif %}</span></li><li><strong>Daily Installs</strong> <span>{% if data.dailyInstalls is not none %}{{ "{:,.0f}".format(data.dailyInstalls) }}{% else %}N/A{% endif %}</span></li><li><strong>Daily Installs (Min ~ Real)</strong> <span>{% if data.minDailyInstalls is not none %}{{ "{:,.0f}".format(data.minDailyInstalls) }} ~ {{ "{:,.0f}".format(data.realDailyInstalls) }}{% else %}N/A{% endif %}</span></li><li><strong>Monthly Installs</strong> <span>{% if data.monthlyInstalls is not none %}{{ "{:,.0f}".format(data.monthlyInstalls) }}{% else %}N/A{% endif %}</span></li><li><strong>Monthly Installs (Min ~ Real)</strong> <span>{% if data.minMonthlyInstalls is not none %}{{ "{:,.0f}".format(data.minMonthlyInstalls) }} ~ {{ "{:,.0f}".format(data.realMonthlyInstalls) }}{% else %}N/A{% endif %}</span></li></ul>
                 <h3 class="section-title">Screenshots</h3><div class="screenshots-container">{% for url in data.screenshots %}<img src="{{ url }}" class="screenshot-img">{% endfor %}</div>
                 <h3 class="section-title">Description</h3><p class="description-box">{{ data.description }}</p>
                 {% if data.whatsNew %}<h3 class="section-title">What's New</h3><div class="description-box"><ul style="padding-left: 1rem;">{% for item in data.whatsNew %}<li>{{ item }}</li>{% endfor %}</ul></div>{% endif %}
                 <h3 class="section-title">Additional Information</h3><ul class="details-list"><li><strong>Last Updated</strong> <span>{{ data.lastUpdated or 'N/A' }}</span></li><li><strong>Released</strong> <span>{{ data.released or 'N/A' }}</span></li><li><strong>Content Rating</strong> <span>{{ data.contentRating or 'N/A' }}</span></li><li><strong>In-App Products</strong> <span>{{ data.inAppProductPrice or 'None' }}</span></li><li><strong>Developer Email</strong> <span><a href="mailto:{{ data.developerEmail }}">{{ data.developerEmail or 'N/A' }}</a></span></li></ul>
                 {% if data.permissions %}<h3 class="section-title">App Permissions</h3><div class="permission-group">{% if data.permissions is mapping %}{% for category, perms in data.permissions.items() %}<h4>{{ category }}</h4><ul class="permission-list">{% for p in perms %}<li>{{ p }}</li>{% endfor %}</ul>{% endfor %}{% else %}<ul class="permission-list">{% for p in data.permissions %}<li>{{ p }}</li>{% endfor %}</ul>{% endif %}</div>{% endif %}
+                
+                {% if data.dataSafety %}<h3 class="section-title">Data Safety</h3><div class="simple-list">{% for item in data.dataSafety %}- {{ item }}<br>{% endfor %}</div>{% endif %}
+                <h3 class="section-title">Developer Information</h3>
+                <ul class="details-list">
+                    <li><strong>Website</strong><span><a href="{{ data.developerWebsite }}" target="_blank">{{ data.developerWebsite }}</a></span></li>
+                    <li><strong>Address</strong><span><pre style="margin:0; padding:0; background:none; border:none;">{{ data.developerAddress }}</pre></span></li>
+                    <li><strong>Play Store Link</strong><span><a href="{{ data.appUrl }}" target="_blank">View on Google Play</a></span></li>
+                </ul>
+
             </div>
             {% elif last_action in ['Search Apps', 'Top Charts', 'Similar Apps'] and data %}
             <div class="results-grid">
@@ -150,7 +151,7 @@
         </div>
         {% endif %}
         
-        <footer><p>Developed by 3bdesamad. Powered by the <a href="https://github.com/Mohammedcha/gplay-scraper" target="_blank">gplay-scraper</a> library created by Mohammed Cha.</p></footer>
+        <footer><p>Developed by 3bdesamad. Powered by the <a href="https://github.com/Mohammedcha/gplay-scraper" target="_blank">gplay-scraper</a> library created by Mohammedcha.</p></footer>
     </div>
 
     <script>
