@@ -6,7 +6,7 @@
 
 A modern, clean, and user-friendly web interface for the powerful `gplay-scraper` library. This application allows you to scrape data from the Google Play Store through a simple web UI instead of the command line.
 
-![App Screenshot](https://i.imgur.com/2h1t48X.png)
+![App Screenshot](https://i.imgur.com/OJ22TY4.png)
 
 ---
 
