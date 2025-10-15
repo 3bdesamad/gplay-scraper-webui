@@ -17,9 +17,10 @@ A modern, clean, and user-friendly web interface for the powerful `gplay-scraper
 - **Search Apps:** Search for apps by keyword and view results in a clean grid.
 - **Top Charts:** Fetch Top Free, Top Paid, and Top Grossing apps.
 - **Similar Apps:** Find apps similar to a given package name.
+- **Compare Two Apps**: Instantly compare two apps side-by-side, including their ratings, installs, reviews, developer details, release dates, and more — all displayed in a clean, responsive comparison table.
 - **Search Suggestions:** Get keyword suggestions.
 - **Region Control:** Easily select the country and language for your queries using a single dropdown.
-- **Compare Two Apps**: Instantly compare two apps side-by-side, including their ratings, installs, reviews, developer details, release dates, and more — all displayed in a clean, responsive comparison table.
+
 
 ---
 
