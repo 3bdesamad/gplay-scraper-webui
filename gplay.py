@@ -76,7 +76,7 @@ def index():
             elif 'submit_search' in form_values:
                 last_action, active_tab = 'Search Apps', 'search-apps'
                 query = form_values.get("search_query", "").strip()
-                count = int(form_values.get("count", 10))
+                count = int(form_values.get("count", 12))
                 if not query: raise ValueError("Search Query is required.")
                 scraper.search_print_all(query, count=count, lang=selected_lang, country=selected_country)
 
@@ -84,13 +84,13 @@ def index():
                 last_action, active_tab = 'Top Charts', 'top-charts'
                 chart = form_values.get("chart_type")
                 category = form_values.get("category_type")
-                count = int(form_values.get("count", 20))
+                count = int(form_values.get("count", 21))
                 scraper.list_print_all(chart, category, count=count, lang=selected_lang, country=selected_country)
 
             elif 'submit_similar' in form_values:
                 last_action, active_tab = 'Similar Apps', 'similar-apps'
                 package_name = form_values.get("similar_package", "").strip()
-                count = int(form_values.get("count", 20))
+                count = int(form_values.get("count", 21))
                 if not package_name: raise ValueError("Package Name is required.")
                 scraper.similar_print_all(package_name, count=count, lang=selected_lang, country=selected_country)
 
