@@ -9,7 +9,7 @@ scraper = GPlayScraper(http_client="curl_cffi")
 
 REGIONS = {
     'us': {'name': 'United States', 'lang': 'en'},
-    'ma': {'name': 'Arabic', 'lang': 'ar'},  # --- ma-ar ==> morocco - dz-ar ==> algeria  - eg-ar ==> egypt - sa-ar ==> saudi arabia - ae-ar ==> united arab emirates    ---
+    'ma': {'name': 'Arabic', 'lang': 'ar'},  # --- ma-ar ==> morocco - dz-ar ==> algeria  - eg-ar ==> egypt - sa-ar ==> saudi arabia - ae-ar united arab emirates    ---
     'fr': {'name': 'France', 'lang': 'fr'},
     'es': {'name': 'Spain', 'lang': 'es'},
     'de': {'name': 'Germany', 'lang': 'de'},
@@ -74,7 +74,7 @@ def index():
             
             # --- NEW: COMPARE APPS LOGIC ---
             elif 'submit_compare' in form_values:
-                last_action, active_tab = 'Compare Apps', 'compare-apps'
+                last_action, active_tab = 'Compare', 'compare-apps'
                 pkg1 = form_values.get("package1", "").strip()
                 pkg2 = form_values.get("package2", "").strip()
                 if not pkg1 or not pkg2: raise ValueError("Both package names are required.")
@@ -83,7 +83,7 @@ def index():
                 scraper.app_print_all(pkg2, lang=selected_lang, country=selected_country)
 
             elif 'submit_search' in form_values:
-                last_action, active_tab = 'Search Apps', 'search-apps'
+                last_action, active_tab = 'Search', 'search-apps'
                 query = form_values.get("search_query", "").strip()
                 count = int(form_values.get("count", 21))
                 if not query: raise ValueError("Search Query is required.")
@@ -97,7 +97,7 @@ def index():
                 scraper.list_print_all(chart, category, count=count, lang=selected_lang, country=selected_country)
 
             elif 'submit_similar' in form_values:
-                last_action, active_tab = 'Similar Apps', 'similar-apps'
+                last_action, active_tab = 'Similar', 'similar-apps'
                 package_name = form_values.get("similar_package", "").strip()
                 count = int(form_values.get("count", 21))
                 if not package_name: raise ValueError("Package Name is required.")
@@ -121,9 +121,9 @@ def index():
                 if (last_action == 'App Details') and captured_text:
                     data = json.loads(captured_text)
                 # Compare and Search use the same stream parser
-                elif (last_action in ['Search Apps', 'Compare Apps']) and captured_text:
+                elif (last_action in ['Search', 'Compare']) and captured_text:
                     data = parse_json_stream(captured_text)
-                elif (last_action in ['Top Charts', 'Similar Apps', 'Suggestions']) and captured_text:
+                elif (last_action in ['Top Charts', 'Similar', 'Suggestions']) and captured_text:
                     data = json.loads(captured_text)
                 else:
                     data_output = captured_text
