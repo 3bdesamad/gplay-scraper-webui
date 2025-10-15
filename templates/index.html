@@ -221,8 +221,7 @@
             function switchTab(tabId) { if (!tabId) return; contents.forEach(content => content.classList.remove('active')); tabs.forEach(tab => tab.classList.remove('active')); document.getElementById(tabId).classList.add('active'); document.querySelector(`.tab-link[data-tab="${tabId}"]`).classList.add('active'); }
             tabs.forEach(tab => { tab.addEventListener('click', (e) => { e.preventDefault(); switchTab(tab.getAttribute('data-tab')); }); });
             let initialTab = "{{ active_tab }}";
-            const urlParams = new URLSearchParams(window.location.search);
-            if (urlParams.has('package_name')) { initialTab = 'app-details'; }
+     
             switchTab(initialTab);
         });
     </script>
