@@ -23,7 +23,7 @@
             --button-light-bg: #f6f8fa; --button-light-hover-bg: #e1e4e8;
         }
         body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; background-color: var(--bg-color); color: var(--text-primary); margin: 0; padding: 2rem 1rem; }
-        .main-wrapper { display: flex; justify-content: center; }
+		.main-wrapper { display: flex; justify-content: center; }
         .container { width: 100%; max-width: 1200px; margin: 0 auto; transition: margin-right 0.3s ease-in-out; }
         .app-header-main {
             display: flex;
@@ -84,7 +84,6 @@
         .app-title-group h1 { font-size: 1.75rem; margin: 0; }
         .app-title-group a, .details-list a, footer a { color: var(--text-primary); font-weight: bold; text-decoration: none; }
         .app-title-group a:hover, .details-list a:hover, footer a:hover { text-decoration: underline; }
-        /* --- NEW STYLE: Developer Contact Bar --- */
         .developer-contact-bar { display: flex; gap: 0.75rem; margin-bottom: 1.5rem; flex-wrap: wrap; }
         .contact-link { display: flex; align-items: center; gap: 0.5rem; background-color: var(--button-light-bg); color: var(--text-primary); padding: 0.6rem 1rem; border: 1px solid var(--border-color); border-radius: 6px; text-decoration: none; font-weight: 500; font-size: 0.9rem; transition: background-color 0.2s; }
         .contact-link:hover { background-color: var(--button-light-hover-bg); }
@@ -92,6 +91,8 @@
         .contact-link.primary-action { margin-left: auto; background-color: var(--accent-primary); color: white; border-color: var(--accent-primary); }
         .contact-link.primary-action svg { color: white; }
         .contact-link.primary-action:hover { background-color: #2370df; }
+        .contact-link.third-party { background-color: #1a3a4a; border-color: #2a5a7a; }
+        .contact-link.third-party:hover { background-color: #2a5a7a; }
         .app-summary { font-style: italic; color: var(--text-secondary); margin-bottom: 1.5rem; }
         .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem; margin: 1.5rem 0; }
         .stat-item { background-color: var(--bg-color); padding: 1rem; border-radius: 6px; text-align: center; }
@@ -116,9 +117,47 @@
         .bar { height: 10px; background-color: var(--star-color); border-radius: 4px; }
         .permission-group h4 { margin-top: 1.5rem; }
         .permission-list { list-style: disc; padding-left: 1.5rem; color: var(--text-secondary); }
-        .suggestion-list { list-style: none; padding: 0; }
-        .suggestion-item { background-color: var(--surface-color); border: 1px solid var(--border-color); padding: 1rem; border-radius: 6px; margin-bottom: 0.5rem; }
+        .suggestion-group { margin-bottom: 1.5rem; }
+        .suggestion-group-title {
+            margin-top: 0;
+            margin-bottom: 1rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+        .suggestion-links-container {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        .suggestion-link {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            background-color: var(--surface-color);
+            border: 1px solid var(--border-color);
+            padding: 0.75rem 1rem;
+            border-radius: 6px;
+            text-decoration: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: background-color 0.2s, color 0.2s, border-color 0.2s;
+        }
+        .suggestion-link:hover {
+            background-color: var(--button-light-hover-bg);
+            color: var(--text-primary);
+            border-color: var(--accent-primary);
+        }
+        .suggestion-link svg {
+            width: 1rem;
+            height: 1rem;
+            color: var(--text-secondary);
+            flex-shrink: 0;
+        }
         footer { text-align: center; margin-top: 4rem; padding-top: 2rem; border-top: 1px solid var(--border-color); color: var(--text-secondary); font-size: 0.9rem; }
+        .support-button { display: inline-block; margin-top: 1rem; padding: 0.75rem 1.5rem; background-color: var(--accent-primary); color: white; text-decoration: none; border-radius: 8px; font-weight: 500; transition: background-color 0.2s; border: 1px solid var(--accent-primary); }
+        .support-button:hover { background-color: #2370df; text-decoration: none; }
         #loading-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.7); display: none; justify-content: center; align-items: center; z-index: 1000; }
         .spinner { width: 50px; height: 50px; border: 5px solid var(--border-color); border-top: 5px solid var(--accent-primary); border-radius: 50%; animation: spin 1s linear infinite; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
@@ -178,7 +217,7 @@
                     <div id="search-apps" class="tab-content"><h2 class="form-title">Search</h2><form method="post"><div class="search-container"><div class="search-wrapper"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg><input type="text" name="search_query" class="search-input" placeholder="Filter or search by text..." value="{{ form.search_query or 'social media' }}"></div><div class="filter-chip-select"><span>Region:</span><select name="region" class="filter-select">{% for code, region in regions.items() %}<option value="{{ code }}" {% if code == selected_region %}selected{% endif %}>{{ region.name }}</option>{% endfor %}</select></div><div class="filter-chip"><span>Results:</span><input name="count" type="number" class="count-input" value="{{ form.count or 20 }}"></div><button type="submit" name="submit_search" class="search-button">Search</button></div></form></div>
                     <div id="top-charts" class="tab-content"><h2 class="form-title">Get Top Charts</h2><form method="post"><div class="search-container"><div class="filter-chip-select" style="flex-grow: 1;"><span>Chart:</span><select name="chart_type" class="filter-select" style="width:100%">{% for type in ['TOP_FREE', 'TOP_PAID', 'TOP_GROSSING'] %}<option value="{{ type }}" {% if type == form.chart_type %}selected{% endif %}>{{ type.replace('_', ' ') }}</option>{% endfor %}</select></div><div class="filter-chip-select" style="flex-grow: 1;"><span>Category:</span><select name="category_type" class="filter-select" style="width:100%">{% for type in ['APPLICATION', 'GAME'] %}<option value="{{ type }}" {% if type == form.category_type %}selected{% endif %}>{{ type.title() }}</option>{% endfor %}</select></div></div><div class="filter-controls"><div class="filter-chip-select"><span>Region:</span><select name="region" class="filter-select">{% for code, region in regions.items() %}<option value="{{ code }}" {% if code == selected_region %}selected{% endif %}>{{ region.name }}</option>{% endfor %}</select></div><div class="filter-chip"><span>Results:</span><input name="count" type="number" class="count-input" value="{{ form.count or 20 }}"></div><button type="submit" name="submit_list" class="search-button">Fetch Chart</button></div></form></div>
                     <div id="similar-apps" class="tab-content"><h2 class="form-title">Find Similar Apps</h2><form method="post"><div class="search-container"><div class="search-wrapper"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg><input type="text" name="similar_package" class="search-input" placeholder="Enter package name" value="{{ form.similar_package or 'com.whatsapp' }}"></div><div class="filter-chip-select"><span>Region:</span><select name="region" class="filter-select">{% for code, region in regions.items() %}<option value="{{ code }}" {% if code == selected_region %}selected{% endif %}>{{ region.name }}</option>{% endfor %}</select></div><div class="filter-chip"><span>Results:</span><input name="count" type="number" class="count-input" value="{{ form.count or 20 }}"></div><button type="submit" name="submit_similar" class="search-button">Search</button></div></form></div>
-                    <div id="suggestions" class="tab-content"><h2 class="form-title">Search Suggestions</h2><form method="post"><div class="search-container"><div class="search-wrapper"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg><input type="text" name="suggest_query" class="search-input" placeholder="Enter keyword for suggestions" value="{{ form.suggest_query or 'fitness' }}"></div><div class="filter-chip-select"><span>Region:</span><select name="region" class="filter-select">{% for code, region in regions.items() %}<option value="{{ code }}" {% if code == selected_region %}selected{% endif %}>{{ region.name }}</option>{% endfor %}</select></div><button type="submit" name="submit_suggest" class="search-button">Search</button></div></form></div>
+                    <div id="suggestions" class="tab-content"><h2 class="form-title">Search Suggestions</h2><form method="post"><div class="search-container"><div class="search-wrapper"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg><input type="text" name="suggest_query" class="search-input" placeholder="Enter keyword for suggestions" value="{{ form.suggest_query or 'fitness' }}"></div><button type="submit" name="submit_suggest" class="search-button">Search</button></div></form></div>
                     <div id="compare-apps" class="tab-content"><h2 class="form-title">Compare Two Apps</h2><form method="post"><div class="search-container"><input type="text" name="package1" class="search-input" placeholder="App 1 (e.g., com.whatsapp)" value="{{ form.package1 or 'com.whatsapp' }}"><input type="text" name="package2" class="search-input" placeholder="App 2 (e.g., org.telegram.messenger)" value="{{ form.package2 or 'org.telegram.messenger' }}"></div><div class="filter-controls"><div class="filter-chip-select"><span>Region:</span><select name="region" class="filter-select">{% for code, region in regions.items() %}<option value="{{ code }}" {% if code == selected_region %}selected{% endif %}>{{ region.name }}</option>{% endfor %}</select></div><button type="submit" name="submit_compare" class="search-button" style="margin-left: auto;">Compare</button></div></form></div>
                 </div>
 
@@ -193,12 +232,24 @@
                             {% if data.developerEmail %}<a href="mailto:{{ data.developerEmail }}" class="contact-link"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg><span>Email</span></a>{% endif %}
                             {% if data.developerWebsite %}<a href="{{ data.developerWebsite }}" target="_blank" class="contact-link"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.72"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.72-1.72"></path></svg><span>Website</span></a>{% endif %}
                             {% if data.privacyPolicy %}<a href="{{ data.privacyPolicy }}" target="_blank" class="contact-link"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg><span>Policy</span></a>{% endif %}
-                            <a href="{{ data.appUrl }}" target="_blank" class="contact-link primary-action"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M21.5,12.2L6.7,2.4C6.2,2.1,5.7,2,5.2,2C4,2,3,3,3,4.2v15.5C3,21,4,22,5.2,22c0.5,0,1-0.1,1.5-0.4l14.8-9.8C22.5,11.2,22.5,12.8,21.5,12.2z"/></svg><span>View on Play Store</span></a>
+                            
+                            <a href="https://www.appbrain.com/app/{{ data.appId }}" target="_blank" class="contact-link third-party"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M18.7 8l-5.1 5.2-2.8-2.7L7 14.3"/></svg><span>AppBrain</span></a>
+                            <a href="https://apkpure.com/{{ data.apkpureSlug }}/{{ data.appId }}" target="_blank" class="contact-link third-party"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg><span>APKPure</span></a>
+                            <a href="{{ data.appUrl }}" target="_blank" class="contact-link primary-action"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M21.5,12.2L6.7,2.4C6.2,2.1,5.7,2,5.2,2C4,2,3,3,3,4.2v15.5C3,21,4,22,5.2,22c0.5,0,1-0.1,1.5-0.4l14.8-9.8C22.5,11.2,22.5,12.8,21.5,12.2z"/></svg><span>Play Store</span></a>
                         </div>
                         
-                        <p class="app-summary">{{ data.summary }}</p><h3 class="section-title">Key Statistics</h3><div class="stats-grid"><div class="stat-item"><div class="stat-label">Rating</div><div class="stat-value">⭐ {% if data.score %}{{ "%.1f"|format(data.score) }}{% else %}N/A{% endif %}</div></div><div class="stat-item"><div class="stat-label">Installs</div><div class="stat-value">{{ data.installs or 'N/A' }}</div></div><div class="stat-item"><div class="stat-label">Total Ratings</div><div class="stat-value">{% if data.ratings is not none %}{{ "{:,.0f}".format(data.ratings) }}{% else %}N/A{% endif %}</div></div><div class="stat-item"><div class="stat-label">Total Reviews</div><div class="stat-value">{% if data.reviews is not none %}{{ "{:,.0f}".format(data.reviews) }}{% else %}N/A{% endif %}</div></div></div>
+                        <p class="app-summary">{{ data.summary }}</p>
+                        
+                        <h3 class="section-title">Statistics & Metrics</h3>
+                        <div class="stats-grid">
+						    <div class="stat-item"><div class="stat-label">Total Ratings</div><div class="stat-value">{% if data.ratings is not none %}{{ "{:,.0f}".format(data.ratings) }}{% else %}N/A{% endif %}</div></div>
+                            <div class="stat-item"><div class="stat-label">Installs</div><div class="stat-value">{{ data.installs or 'N/A' }}</div></div>
+                            <div class="stat-item"><div class="stat-label">Real Installs</div><div class="stat-value">{% if data.realInstalls is not none %}{{ "{:,.0f}".format(data.realInstalls) }}{% else %}N/A{% endif %}</div></div>
+                            <div class="stat-item"><div class="stat-label">Daily Installs</div><div class="stat-value">{% if data.dailyInstalls is not none %}{{ "{:,.0f}".format(data.dailyInstalls) }}{% else %}N/A{% endif %}</div></div>
+                            <div class="stat-item"><div class="stat-label">Monthly Installs</div><div class="stat-value">{% if data.monthlyInstalls is not none %}{{ "{:,.0f}".format(data.monthlyInstalls) }}{% else %}N/A{% endif %}</div></div>
+                        </div>
+
                         {% if data.histogram and (data.histogram | sum > 0) %}<h3 class="section-title">Rating Distribution</h3><div class="rating-distribution"><div class="rating-summary"><div class="rating-score">{% if data.score %}{{ "%.1f"|format(data.score) }}{% else %}N/A{% endif %}</div><div class="rating-count">{% if data.ratings is not none %}{{ "{:,.0f}".format(data.ratings) }} ratings{% endif %}</div></div><div class="histogram">{% set total_ratings = data.histogram | sum %}{% for i in range(5, 0, -1) %}<div class="histogram-row"><span class="histogram-label">{{ i }}★</span><div class="bar-container"><div class="bar" style="width: {{ (data.histogram[i-1] / total_ratings) * 100 }}%;"></div></div></div>{% endfor %}</div></div>{% endif %}
-                        <h3 class="section-title">Installment Metrics</h3><ul class="details-list"><li><strong>Min Installs</strong> <span>{% if data.minInstalls is not none %}{{ "{:,.0f}".format(data.minInstalls) }}{% else %}N/A{% endif %}</span></li><li><strong>Real Installs</strong> <span>{% if data.realInstalls is not none %}{{ "{:,.0f}".format(data.realInstalls) }}{% else %}N/A{% endif %}</span></li><li><strong>Daily Installs</strong> <span>{% if data.dailyInstalls is not none %}{{ "{:,.0f}".format(data.dailyInstalls) }}{% else %}N/A{% endif %}</span></li><li><strong>Daily Installs (Min ~ Real)</strong> <span>{% if data.minDailyInstalls is not none %}{{ "{:,.0f}".format(data.minDailyInstalls) }} ~ {{ "{:,.0f}".format(data.realDailyInstalls) }}{% else %}N/A{% endif %}</span></li><li><strong>Monthly Installs</strong> <span>{% if data.monthlyInstalls is not none %}{{ "{:,.0f}".format(data.monthlyInstalls) }}{% else %}N/A{% endif %}</span></li><li><strong>Monthly Installs (Min ~ Real)</strong> <span>{% if data.minMonthlyInstalls is not none %}{{ "{:,.0f}".format(data.minMonthlyInstalls) }} ~ {{ "{:,.0f}".format(data.realMonthlyInstalls) }}{% else %}N/A{% endif %}</span></li></ul>
                         <h3 class="section-title">Screenshots</h3><div class="screenshots-container">{% if data.screenshots %}{% for url in data.screenshots %}<img src="{{ url }}" class="screenshot-img">{% endfor %}{% endif %}</div>
                         <h3 class="section-title">Description</h3><p class="description-box">{{ data.description }}</p>
                         {% if data.whatsNew %}<h3 class="section-title">What's New</h3><div class="description-box"><ul style="padding-left: 1rem;">{% for item in data.whatsNew %}<li>{{ item }}</li>{% endfor %}</ul></div>{% endif %}
@@ -229,13 +280,31 @@
                         {% endfor %}
                     </div>
                     {% elif last_action == 'Suggestions' and data %}
-                    <ul class="suggestion-list">{% for suggestion in data %}<li class="suggestion-item">{{ suggestion }}</li>{% endfor %}</ul>
+                    <div class="suggestion-groups">
+                        {% for main_query, suggestions_list in data.items() %}
+                        <div class="suggestion-group">
+                            <h4 class="suggestion-group-title">{{ main_query }}</h4>
+                            <div class="suggestion-links-container">
+                                {% for suggestion in suggestions_list %}
+                                <a href="#" class="suggestion-link" data-suggestion="{{ suggestion }}">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+                                    <span>{{ suggestion }}</span>
+                                </a>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
                     {% elif data_output %}<pre>{{ data_output }}</pre>{% endif %}
                 </div>
                 {% endif %}
             </main>
 
-            <footer><p>Developed by <a href="https://github.com/3bdesamad/gplay-scraper-webui" target="_blank">3bdesamad</a>. Powered by the <a href="https://github.com/Mohammedcha/gplay-scraper" target="_blank">gplay-scraper</a> library created by Mohammed Cha.</p></footer>
+            <footer>
+                <p>Developed by <a href="https://github.com/3bdesamad/gplay-scraper-webui" target="_blank">3bdesamad</a>. Powered by the <a href="https://github.com/Mohammedcha/gplay-scraper" target="_blank">gplay-scraper</a> library created by Mohammed Cha.</p>
+                <a href="https://www.paypal.com/paypalme/3bdesamad" target="_blank" class="support-button">❤️ Support The Project</a>
+            </footer>
+
         </div>
     </div>
     
@@ -329,6 +398,31 @@
             {% endif %}
 
             loadHistory();
+
+            // Handle suggestion link clicks
+            document.querySelectorAll('.suggestion-link').forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const suggestionText = this.dataset.suggestion;
+                    if (!suggestionText) return;
+
+                    loadingOverlay.style.display = 'flex';
+                    switchTab('search-apps');
+                    
+                    const searchTab = document.getElementById('search-apps');
+                    const searchInput = searchTab.querySelector('input[name="search_query"]');
+                    const searchForm = searchTab.querySelector('form');
+                    
+                    searchInput.value = suggestionText;
+                    
+                    const submitButton = searchForm.querySelector('button[name="submit_search"]');
+                    if (submitButton) {
+                        submitButton.click();
+                    } else {
+                        searchForm.submit();
+                    }
+                });
+            });
         });
     </script>
 </body>
